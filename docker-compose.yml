@@ -1,0 +1,57 @@
+version: '3'
+
+services:
+  device-backend-container:
+    image: devicebackendimg
+    ports:
+      - "8080:8080"
+    environment:
+      DB_IP: postgres-container
+    depends_on:
+      - postgres-container
+    networks:
+      - myNetwork
+
+  user-backend-container:
+    image: usersbackendimg
+    ports:
+      - "8081:8081"
+    environment:
+      DB_IP: postgres-container
+      DEVICE_BACKEND_IP: device-backend-container
+    depends_on:
+      - postgres-container
+    networks:
+      - myNetwork
+
+  front-container:
+    image: frontimg
+    ports:
+      - "3000:3000"
+    expose:
+      - "3000"
+    depends_on:
+      - user-backend-container
+      - device-backend-container
+    networks:
+      - myNetwork
+
+  postgres-container:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: roota
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - myNetwork
+
+networks:
+  myNetwork:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    external: true

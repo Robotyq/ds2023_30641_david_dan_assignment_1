@@ -1,0 +1,4 @@
+export const HOST = {
+    user_backend_api: 'http://localhost:8081',
+    device_backend_api: 'http://localhost:8080'
+};
