@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ro.ds.monitoring_MM.dtos.HourMeasure;
 import ro.ds.monitoring_MM.dtos.builders.RawBuilder;
+import ro.ds.monitoring_MM.entities.Device;
 import ro.ds.monitoring_MM.entities.Measurement;
 import ro.ds.monitoring_MM.repositories.DeviceRepository;
 import ro.ds.monitoring_MM.repositories.MeasurementRepository;
@@ -55,4 +56,11 @@ public class MeasurementService {
         return hourConsumption;
     }
 
+    public void insertOrUpdate(Device updatedDevice) {
+        deviceRepository.save(updatedDevice);
+    }
+
+    public void delete(UUID id) {
+        deviceRepository.deleteById(id);
+    }
 }

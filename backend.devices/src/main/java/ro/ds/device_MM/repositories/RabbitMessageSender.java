@@ -11,13 +11,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import ro.ds.device_MM.dtos.DeviceDeleteMessage;
 import ro.ds.device_MM.dtos.DeviceUpdateMessage;
-import ro.ds.device_MM.services.DeviceService;
 
 @Configuration
 public class RabbitMessageSender {
 
     public static final String QUEUE_NAME = "deviceChangeQueue";
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeviceService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMessageSender.class);
     private final ObjectMapper objectMapper;
     private final RabbitTemplate rabbitTemplate;
 
