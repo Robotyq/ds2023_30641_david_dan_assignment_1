@@ -22,14 +22,14 @@ public class UserService {
 
     public UUID insert(User newUser) {
         UUID insertedId = userRepository.save(newUser).getId();
-        LOGGER.debug("User id {} was inserted in db", insertedId);
+        LOGGER.info("User id {} was inserted in db", insertedId);
         return insertedId;
     }
 
     public void deleteById(UUID id) {
         if (userRepository.existsById(id)) {
             userRepository.deleteById(id);
-            LOGGER.debug("User id {} was deleted from DB", id);
+            LOGGER.info("User id {} was deleted from DB", id);
             return;
         }
         LOGGER.error("User id {} was not found in DB", id);

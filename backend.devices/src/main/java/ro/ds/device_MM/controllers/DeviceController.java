@@ -34,11 +34,6 @@ public class DeviceController {
         return new ResponseEntity<>(dtos, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/healthCheck")
-    public ResponseEntity<String> check() {
-        return new ResponseEntity<>("Device Microsystem is up", HttpStatus.OK);
-    }
-
     @GetMapping(value = "/{id}")
     public ResponseEntity<DeviceDTO> getDevice(@PathVariable("id") UUID deviceId) {
         DeviceDTO dto = deviceService.findDeviceById(deviceId);

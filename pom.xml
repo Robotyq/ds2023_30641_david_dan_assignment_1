@@ -16,6 +16,7 @@
     <modules>
         <module>backend.devices</module>
         <module>backend.users</module>
+        <module>backend.monitoring</module>
     </modules>
     <packaging>pom</packaging>
 

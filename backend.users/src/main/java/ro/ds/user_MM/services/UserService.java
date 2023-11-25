@@ -43,10 +43,10 @@ public class UserService {
     @Transactional
     public UUID insert(User user) {
         user = userRepository.save(user);
-        LOGGER.debug("User with id {} was inserted in db", user.getId());
+        LOGGER.info("User with id {} was inserted in db", user.getId());
 
         if (userInDeviceMSRepo.insertUser(user.getId())) {
-            LOGGER.debug("User with id {} was inserted in DB from Devices Microservice", user.getId());
+            LOGGER.info("User with id {} was inserted in DB from Devices Microservice", user.getId());
         } else {
             LOGGER.error("User with id {} was not inserted in DB from Devices Microservice", user.getId());
             userRepository.deleteById(user.getId());
@@ -63,7 +63,7 @@ public class UserService {
             throw new ResourceNotFoundException(User.class.getSimpleName() + " with id: " + id);
         }
         user = userRepository.save(user);
-        LOGGER.debug("User with id {} was updated in DB", user.getId());
+        LOGGER.info("User with id {} was updated in DB", user.getId());
         return user.getId();
     }
 
@@ -71,13 +71,13 @@ public class UserService {
     public void deleteById(UUID id) {
         if (userRepository.existsById(id)) {
             if (userInDeviceMSRepo.deleteUser(id)) {
-                LOGGER.debug("User with id {} was deleted from DB from Devices Microservice", id);
+                LOGGER.info("User with id {} was deleted from DB from Devices Microservice", id);
             } else {
                 LOGGER.error("User with id {} was not deleted from DB from Devices Microservice", id);
                 throw new ResourceNotFoundException(User.class.getSimpleName() + " with id: " + id);
             }
             userRepository.deleteById(id);
-            LOGGER.debug("User with id {} was deleted from DB", id);
+            LOGGER.info("User with id {} was deleted from DB", id);
             return;
         }
         LOGGER.error("User with id {} was not found in DB", id);

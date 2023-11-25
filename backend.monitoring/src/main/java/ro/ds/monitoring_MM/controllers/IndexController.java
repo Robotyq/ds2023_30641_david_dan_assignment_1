@@ -1,4 +1,4 @@
-package ro.ds.user_MM.controllers;
+package ro.ds.monitoring_MM.controllers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +12,6 @@ public class IndexController {
 
     @GetMapping(value = "/")
     public ResponseEntity<String> getStatus() {
-        return new ResponseEntity<>("Users microservice is running...", HttpStatus.OK);
+        return new ResponseEntity<>("Monitoring microservice is running...", HttpStatus.OK);
     }
 }
