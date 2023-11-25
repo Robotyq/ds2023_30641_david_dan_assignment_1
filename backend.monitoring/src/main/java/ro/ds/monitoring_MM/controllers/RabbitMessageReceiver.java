@@ -9,7 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ro.ds.monitoring_MM.dtos.DeviceDeleteMessage;
 import ro.ds.monitoring_MM.dtos.DeviceUpdateMessage;
+import ro.ds.monitoring_MM.dtos.MeasureJSON;
+import ro.ds.monitoring_MM.dtos.builders.MeasurementBuilder;
 import ro.ds.monitoring_MM.entities.Device;
+import ro.ds.monitoring_MM.entities.Measurement;
 import ro.ds.monitoring_MM.services.MeasurementService;
 
 import java.util.UUID;
@@ -17,10 +20,10 @@ import java.util.UUID;
 @Component
 public class RabbitMessageReceiver {
 
-    public static final String QUEUE_NAME = "deviceChangeQueue";
+    public static final String DEVICE_CHANGE_QUEUE = "deviceChangeQueue";
+    public static final String MEASURE_QUEUE = "measurementsQueue";
     private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMessageReceiver.class);
     private final MeasurementService measurementService;
-
     private final ObjectMapper objectMapper;
 
     @Autowired
@@ -29,7 +32,7 @@ public class RabbitMessageReceiver {
         this.objectMapper = objectMapper;
     }
 
-    @RabbitListener(queues = QUEUE_NAME)
+    @RabbitListener(queues = DEVICE_CHANGE_QUEUE)
     public void receiveMessage(String message) {
         LOGGER.debug("Message received: {}", message);
         try {
@@ -46,6 +49,19 @@ public class RabbitMessageReceiver {
             throw new RuntimeException(ex);
         }
     }
+
+    @RabbitListener(queues = MEASURE_QUEUE)
+    public void receiveMeasure(String message) {
+        LOGGER.info("Message received: {}", message);
+        try {
+            MeasureJSON dto = objectMapper.readValue(message, MeasureJSON.class);
+            Measurement measurement = MeasurementBuilder.getMeasurement(dto);
+            measurementService.insert(measurement);
+        } catch (JsonProcessingException ex) {
+            ex.printStackTrace();
+        }
+    }
+
 
 }
 

@@ -1,5 +1,7 @@
 package ro.ds.monitoring_MM.services;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ro.ds.monitoring_MM.dtos.HourMeasure;
@@ -15,6 +17,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class MeasurementService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MeasurementService.class);
     private final MeasurementRepository measurementRepository;
     private final DeviceRepository deviceRepository;
 
@@ -36,8 +39,8 @@ public class MeasurementService {
         if (hourMeasures.size() == 0) {
             return hourConsumption;
         }
-        long initialConsumption = hourMeasures.get(0).getMeasure();
-        long consumption = 0;
+        double initialConsumption = hourMeasures.get(0).getMeasure();
+        double consumption = 0;
         for (int i = 0; i < hourMeasures.size(); i++) {
             HourMeasure m = hourMeasures.get(i);
             if (m.getTimestamp().before(hour)) {
@@ -62,5 +65,42 @@ public class MeasurementService {
 
     public void delete(UUID id) {
         deviceRepository.deleteById(id);
+    }
+
+    public void insert(Measurement meas) {
+        Measurement saved = measurementRepository.save(meas);
+        LOGGER.info("Measurement saved: {}", saved);
+        double liveConsumption = computeLiveConsumption(saved.getDevice());
+        sendToUI(liveConsumption);
+    }
+
+    private double computeLiveConsumption(Device device) {
+        List<Measurement> fromLastHour = measurementRepository.getFromLastHour(device.getId());
+        double consumption = 0;
+        ArrayList<HourMeasure> hourMeasures = fromLastHour
+                .stream()
+                .map(RawBuilder::toRawBuilder)
+                .sorted(Comparator.comparing(HourMeasure::getTimestamp))
+                .collect(Collectors.toCollection(ArrayList::new));
+        if (hourMeasures.size() == 0) {
+            return 0;
+        }
+        double lastConsumption = hourMeasures.get(0).getMeasure();
+        for (int i = 1; i < hourMeasures.size(); i++) {
+            double measure = hourMeasures.get(i).getMeasure();
+            double delta = measure - lastConsumption;
+            if (delta >= 0) {
+                consumption += delta;
+            } else {
+                consumption += measure;
+            }
+            lastConsumption = measure;
+        }
+        return consumption;
+    }
+
+    private void sendToUI(double liveConsumption) {
+        //TODO: send to UI via websocket
+        LOGGER.warn("Live consumption: {}", liveConsumption);
     }
 }

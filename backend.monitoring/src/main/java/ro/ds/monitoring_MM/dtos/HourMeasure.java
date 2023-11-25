@@ -9,7 +9,7 @@ import java.sql.Time;
 public class HourMeasure {
 
     @Getter
-    private long measure;
+    private double measure;
     @Getter
     private Time timestamp;
 }
