@@ -25,7 +25,7 @@ public class MeasurementController {
 
     @GetMapping(value = "/{device_id}")
     public ResponseEntity<List<HourMeasure>> getHistory(@PathVariable("device_id") UUID deviceId) {
-        Date date = new Date(123, 11, 24);
+        Date date = new Date(123, 10, 25);
         List<HourMeasure> history = measurementService.getConsumptionForDate(deviceId, date);
         return new ResponseEntity<>(history, HttpStatus.OK);
     }

@@ -42,7 +42,7 @@ public class Main {
                 try (InputStream inputStream = Main.class.getResourceAsStream("/sensor.csv");
                      BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
                     String line;
-                    long timeMillis = 1000 * 3600 * 2 + System.currentTimeMillis() - 1000 * 3600 * 2;//acum 2h
+                    long timeMillis = 1000 * 3600 * 2 + System.currentTimeMillis() - 1000 * 3600 * 24;//acum 24h
                     while ((line = reader.readLine()) != null) {
                         if (line.startsWith("#")) {
                             break;
@@ -58,7 +58,8 @@ public class Main {
                         channel.basicPublish("", QUEUE_NAME, null, message.getBytes());
                         System.out.println(" [x] Sent: " + message);
 
-                        TimeUnit.SECONDS.sleep(3);
+//                        TimeUnit.SECONDS.sleep(3);
+                        TimeUnit.MILLISECONDS.sleep(30);
                     }
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);

@@ -11,7 +11,7 @@ import ro.ds.monitoring_MM.entities.Measurement;
 import ro.ds.monitoring_MM.repositories.DeviceRepository;
 import ro.ds.monitoring_MM.repositories.MeasurementRepository;
 
-import java.sql.Time;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,30 +32,33 @@ public class MeasurementService {
         ArrayList<HourMeasure> hourMeasures = measurements
                 .stream()
                 .map(RawBuilder::toRawBuilder)
-                .sorted(Comparator.comparing(HourMeasure::getTimestamp))
+                .sorted(Comparator.comparing(HourMeasure::getHour))
                 .collect(Collectors.toCollection(ArrayList::new));
         List<HourMeasure> hourConsumption = new ArrayList<>();
-        Time hour = new Time(1, 0, 0);
+        LocalTime hour = LocalTime.of(0, 59, 59);
+
         if (hourMeasures.size() == 0) {
             return hourConsumption;
         }
-        double initialConsumption = hourMeasures.get(0).getMeasure();
+        double lastConsumption = hourMeasures.get(0).getMeasure();
         double consumption = 0;
-        for (int i = 0; i < hourMeasures.size(); i++) {
+        for (int i = 1; i < hourMeasures.size(); i++) {
             HourMeasure m = hourMeasures.get(i);
-            if (m.getTimestamp().before(hour)) {
-                if (m.getMeasure() < initialConsumption) {
-                    consumption += hourMeasures.get(i - 1).getMeasure() - initialConsumption;
-                    initialConsumption = m.getMeasure();
-                }
-            } else {
-                consumption += hourMeasures.get(i - 1).getMeasure() - initialConsumption;
-                hourConsumption.add(new HourMeasure(consumption, hour));
+            while (hour.isBefore(m.getHour())) {
+                hourConsumption.add(new HourMeasure(consumption, hour.minusSeconds(59 * 61)));
                 consumption = 0;
-                hour.setTime(hour.getTime() + 3600000);
-                initialConsumption = m.getMeasure();
+                hour = hour.plusHours(1);
             }
+            double delta = m.getMeasure() - lastConsumption;
+            if (delta >= 0) {
+                consumption += delta;
+            } else {
+                consumption += m.getMeasure();
+            }
+
+            lastConsumption = m.getMeasure();
         }
+        hourConsumption.add(new HourMeasure(consumption, hour.minusSeconds(59 * 61)));
         return hourConsumption;
     }
 
@@ -80,7 +83,7 @@ public class MeasurementService {
         ArrayList<HourMeasure> hourMeasures = fromLastHour
                 .stream()
                 .map(RawBuilder::toRawBuilder)
-                .sorted(Comparator.comparing(HourMeasure::getTimestamp))
+                .sorted(Comparator.comparing(HourMeasure::getHour))
                 .collect(Collectors.toCollection(ArrayList::new));
         if (hourMeasures.size() == 0) {
             return 0;
