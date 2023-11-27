@@ -5,6 +5,9 @@ import axios from 'axios';
 import {HOST} from '../../commons/hosts';
 import {useNavigate} from 'react-router-dom';
 import BarChart from "./BarChart";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
 
 const containerStyle = {
     padding: '20px',
@@ -12,6 +15,7 @@ const containerStyle = {
     borderRadius: '5px',
     boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
     backgroundColor: 'rgba(255, 255, 255, 0)',
+    overflowY: 'auto', // Add vertical scrolling for the cards
 };
 
 const headerStyle = {
@@ -37,6 +41,7 @@ export default function ClientPage() {
     const [currentUser, setCurrentUser] = useState(null);
     const [selectedDevice, setSelectedDevice] = useState(null);
     const [apiResponse, setApiResponse] = useState(null);
+    const [selectedDate, setSelectedDate] = useState(new Date());
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -46,9 +51,18 @@ export default function ClientPage() {
         setCurrentUser(loggedUser);
     }, []);
 
+    useEffect(() => {
+        if (selectedDevice === null) return
+        let date = selectedDate.toISOString().split('T')[0]
+        handleButtonClick(selectedDevice.id, date)
+    }, [selectedDevice, selectedDate]);
+
     const handleRedirect = (role) => {
         if (role === 'ADMIN') navigate('/admin');
         if (role === ' ') navigate('/');
+    };
+    const handleDateChange = (date) => {
+        setSelectedDate(date);
     };
 
     useEffect(() => {
@@ -61,20 +75,20 @@ export default function ClientPage() {
         }
     }, [currentUser]);
 
-    const handleButtonClick = (deviceId) => {
+    const handleButtonClick = (deviceId, date) => {
         axios
-            .get(HOST.monitoring_api + deviceId)
+            .get(HOST.monitoring_api + deviceId, {
+                params: {
+                    dateString: date, // Format as "yyyy-MM-DD
+                },
+            })
             .then((response) => {
                 setApiResponse(response.data);
             })
             .catch((error) => {
                 console.error('Error fetching data:', error);
+                setApiResponse(null);
             });
-    };
-
-    const handleDeviceClick = (device) => {
-        setSelectedDevice(device);
-        handleButtonClick(device.id)
     };
 
     if (!currentUser) {
@@ -82,8 +96,8 @@ export default function ClientPage() {
     }
 
     return (
-        <div style={{display: 'flex'}}>
-            <div style={{flex: 0.25}}>
+        <div style={{display: 'flex', height: '100vh'}}>
+            <div style={{flex: 0.25, overflowY: 'auto'}}>
                 <Card style={containerStyle}>
                     <CardHeader style={headerStyle}>{currentUser.name}'s Devices</CardHeader>
                     {userDevices.length > 0 ? (
@@ -92,7 +106,7 @@ export default function ClientPage() {
                                 <ListGroupItem key={device.id}>
                                     <h3
                                         style={{marginBottom: '10px', cursor: 'pointer'}}
-                                        onClick={() => handleDeviceClick(device)}
+                                        onClick={() => setSelectedDevice(device)}
                                     >
                                         {device.description}
                                     </h3>
@@ -104,10 +118,10 @@ export default function ClientPage() {
                                     </p>
                                     <Button
                                         color="primary"
-                                        onClick={() => handleButtonClick(device.id)}
+                                        onClick={() => handleButtonClick(device.id, selectedDate.toISOString().split('T')[0])}
                                         style={buttonStyle}
                                     >
-                                        Fetch Data
+                                        Fetch History
                                     </Button>
                                     <hr style={hrStyle}/>
                                 </ListGroupItem>
@@ -118,19 +132,32 @@ export default function ClientPage() {
                     )}
                 </Card>
             </div>
-            <div style={{flex: 1, marginLeft: '20px'}}>
-                {selectedDevice && apiResponse && (
-
+            <div style={{flex: 1, marginLeft: '20px', textAlign: 'center'}}>
+                <label style={{marginBottom: '10px', display: 'block'}}>Select Date:</label>
+                <DatePicker
+                    selected={selectedDate}
+                    onChange={handleDateChange}
+                    dateFormat="dd-MM-yyyy"
+                    className="form-control"
+                    style={{margin: '0 auto'}} // Center the date picker
+                />
+                <br></br>
+                <br></br>
+                {selectedDevice && apiResponse !== null && apiResponse.length > 0 ? (
                     <div>
                         <BarChart data={apiResponse}/>
-
-                        <h2>Data for {selectedDevice.description}</h2>
-                        dghjgdj
-                        {/* Add code to render the graph using the apiResponse data */}
-                        {/* For example, you can use a chart library like BarChart.js */}
+                    </div>
+                ) : (
+                    <div>
+                        {selectedDevice === null && <p>No device selected</p>}
+                        {selectedDevice !== null && apiResponse === null && <p>Can't fetch data</p>}
+                        {selectedDevice !== null && apiResponse !== null && apiResponse.length === 0 && (
+                            <p>No registered values for selected device and date</p>
+                        )}
                     </div>
                 )}
             </div>
+
         </div>
     );
 }

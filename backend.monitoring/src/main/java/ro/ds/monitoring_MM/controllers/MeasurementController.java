@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.*;
 import ro.ds.monitoring_MM.dtos.HourMeasure;
 import ro.ds.monitoring_MM.services.MeasurementService;
 
-import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,8 +26,10 @@ public class MeasurementController {
     }
 
     @GetMapping(value = "/{device_id}")
-    public ResponseEntity<List<HourMeasure>> getHistory(@PathVariable("device_id") UUID deviceId) {
-        Date date = new Date(123, 10, 25);
+    public ResponseEntity<List<HourMeasure>> getHistory(@PathVariable("device_id") UUID deviceId,
+                                                        @RequestParam String dateString) throws ParseException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = dateFormat.parse(dateString);
         List<HourMeasure> history = measurementService.getConsumptionForDate(deviceId, date);
         return new ResponseEntity<>(history, HttpStatus.OK);
     }

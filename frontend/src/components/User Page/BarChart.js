@@ -24,7 +24,7 @@ const BarChart = ({data}) => {
             },
             title: {
                 display: true,
-                text: 'Chart.js Bar Chart',
+                text: 'Day consumption Bar Chart',
             },
         },
     };
@@ -34,9 +34,9 @@ const BarChart = ({data}) => {
         labels: hours,
         datasets: [
             {
-                label: 'Dataset 1',
+                label: 'Consumption in kWh',
                 data: measures,
-                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                backgroundColor: 'rgba(0,102,255,0.66)',
             },
         ],
     };
@@ -44,7 +44,6 @@ const BarChart = ({data}) => {
     return (
         <div>
             <Bar options={options} data={dataset}/>
-            {measures}
         </div>
     );
 }

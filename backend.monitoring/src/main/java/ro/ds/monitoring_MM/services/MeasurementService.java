@@ -74,7 +74,7 @@ public class MeasurementService {
         Measurement saved = measurementRepository.save(meas);
         LOGGER.info("Measurement saved: {}", saved);
         double liveConsumption = computeLiveConsumption(saved.getDevice());
-        sendToUI(liveConsumption);
+        sendToUI(liveConsumption, saved.getDevice().getId());
     }
 
     private double computeLiveConsumption(Device device) {
@@ -102,7 +102,7 @@ public class MeasurementService {
         return consumption;
     }
 
-    private void sendToUI(double liveConsumption) {
+    private void sendToUI(double liveConsumption, UUID deviceId) {
         //TODO: send to UI via websocket
         LOGGER.warn("Live consumption: {}", liveConsumption);
     }
