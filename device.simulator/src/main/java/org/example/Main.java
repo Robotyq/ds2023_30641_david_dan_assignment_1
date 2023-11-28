@@ -24,7 +24,7 @@ public class Main {
 
     public static void main(String[] args) {
         if (args.length < 1) {
-            System.out.println("Usage: java CsvToRabbitMQ <device_id>");
+            System.out.println("Usage: java Main <device_id>");
             System.exit(1);
         }
 
@@ -42,7 +42,7 @@ public class Main {
                 try (InputStream inputStream = Main.class.getResourceAsStream("/sensor.csv");
                      BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
                     String line;
-                    long timeMillis = 1000 * 3600 * 2 + System.currentTimeMillis() - 1000 * 3600 * 24;//acum 24h
+                    long timeMillis = 1000 * 3600 * 2 + System.currentTimeMillis();//- 1000 * 3600 * 48;//acum 48h
                     while ((line = reader.readLine()) != null) {
                         if (line.startsWith("#")) {
                             break;
@@ -59,7 +59,7 @@ public class Main {
                         System.out.println(" [x] Sent: " + message);
 
 //                        TimeUnit.SECONDS.sleep(3);
-                        TimeUnit.MILLISECONDS.sleep(30);
+                        TimeUnit.MILLISECONDS.sleep(1000);
                     }
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);

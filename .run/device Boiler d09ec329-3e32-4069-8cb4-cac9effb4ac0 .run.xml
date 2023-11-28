@@ -1,0 +1,17 @@
+<component name="ProjectRunConfigurationManager">
+    <configuration default="false" name="device Boiler d09ec329-3e32-4069-8cb4-cac9effb4ac0 " type="Application"
+                   factoryName="Application">
+        <option name="MAIN_CLASS_NAME" value="org.example.Main"/>
+        <module name="device.simulator"/>
+        <option name="PROGRAM_PARAMETERS" value="d09ec329-3e32-4069-8cb4-cac9effb4ac0 "/>
+        <extension name="coverage">
+            <pattern>
+                <option name="PATTERN" value="org.example.*"/>
+                <option name="ENABLED" value="true"/>
+            </pattern>
+        </extension>
+        <method v="2">
+            <option name="Make" enabled="true"/>
+        </method>
+    </configuration>
+</component>

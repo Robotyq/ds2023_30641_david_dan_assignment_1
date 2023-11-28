@@ -7,7 +7,7 @@ import {useNavigate} from 'react-router-dom';
 import BarChart from "./BarChart";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-
+import SockJsClient from 'react-stomp';
 
 const containerStyle = {
     padding: '20px',
@@ -44,6 +44,7 @@ export default function ClientPage() {
     const [selectedDate, setSelectedDate] = useState(new Date());
     const navigate = useNavigate();
 
+
     useEffect(() => {
         let loggedUser = JSON.parse(sessionStorage.getItem('loggedUser'));
         const role = loggedUser ? loggedUser.role : ' ';
@@ -51,6 +52,21 @@ export default function ClientPage() {
         setCurrentUser(loggedUser);
     }, []);
 
+    let onConnected = () => {
+        console.log("Connected!!")
+    }
+
+    let onMessageReceived = (msg) => {
+        console.log("New Message Received!!", msg)
+        let deviceId = msg.deviceId;
+        let consumption = msg.measure;
+        let consNumber = parseFloat(consumption).toFixed(1);
+        let device = userDevices.find(device => device.id === deviceId);
+        if (device) {
+            let deviceName = device.description;
+            alert("Device " + deviceName + " consumption is too high!  " + consNumber + " W");
+        }
+    }
     useEffect(() => {
         if (selectedDevice === null) return
         let date = selectedDate.toISOString().split('T')[0]
@@ -97,6 +113,16 @@ export default function ClientPage() {
 
     return (
         <div style={{display: 'flex', height: '100vh'}}>
+            <div>
+                <SockJsClient
+                    url={HOST.monitoring_socket}
+                    topics={['/topic/message']}
+                    onConnect={onConnected}
+                    onDisconnect={console.log("Disconnected!")}
+                    onMessage={msg => onMessageReceived(msg)}
+                    debug={true}
+                />
+            </div>
             <div style={{flex: 0.25, overflowY: 'auto'}}>
                 <Card style={containerStyle}>
                     <CardHeader style={headerStyle}>{currentUser.name}'s Devices</CardHeader>
@@ -118,7 +144,11 @@ export default function ClientPage() {
                                     </p>
                                     <Button
                                         color="primary"
-                                        onClick={() => handleButtonClick(device.id, selectedDate.toISOString().split('T')[0])}
+                                        onClick={() => {
+                                            handleButtonClick(device.id, selectedDate.toISOString().split('T')[0]);
+                                            setSelectedDevice(device)
+                                        }
+                                        }
                                         style={buttonStyle}
                                     >
                                         Fetch History
@@ -132,7 +162,7 @@ export default function ClientPage() {
                     )}
                 </Card>
             </div>
-            <div style={{flex: 1, marginLeft: '20px', textAlign: 'center'}}>
+            <div style={{flex: 0.75, marginLeft: '20px', textAlign: 'center'}}>
                 <label style={{marginBottom: '10px', display: 'block'}}>Select Date:</label>
                 <DatePicker
                     selected={selectedDate}

@@ -3,8 +3,10 @@ package ro.ds.monitoring_MM.services;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import ro.ds.monitoring_MM.dtos.HourMeasure;
+import ro.ds.monitoring_MM.dtos.LiveConsumption;
 import ro.ds.monitoring_MM.dtos.builders.RawBuilder;
 import ro.ds.monitoring_MM.entities.Device;
 import ro.ds.monitoring_MM.entities.Measurement;
@@ -20,11 +22,13 @@ public class MeasurementService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MeasurementService.class);
     private final MeasurementRepository measurementRepository;
     private final DeviceRepository deviceRepository;
+    private final SimpMessagingTemplate socketTemplate;
 
     @Autowired
-    public MeasurementService(MeasurementRepository measurementRepository, DeviceRepository deviceRepository) {
+    public MeasurementService(MeasurementRepository measurementRepository, DeviceRepository deviceRepository, SimpMessagingTemplate socketTemplate) {
         this.measurementRepository = measurementRepository;
         this.deviceRepository = deviceRepository;
+        this.socketTemplate = socketTemplate;
     }
 
     public List<HourMeasure> getConsumptionForDate(UUID deviceId, Date date) {
@@ -74,7 +78,9 @@ public class MeasurementService {
         Measurement saved = measurementRepository.save(meas);
         LOGGER.info("Measurement saved: {}", saved);
         double liveConsumption = computeLiveConsumption(saved.getDevice());
-        sendToUI(liveConsumption, saved.getDevice().getId());
+        Device device = deviceRepository.findById(saved.getDevice().getId()).get();
+        if (liveConsumption > device.getMaxConsumption())
+            sendToUI(liveConsumption, saved.getDevice());
     }
 
     private double computeLiveConsumption(Device device) {
@@ -102,8 +108,9 @@ public class MeasurementService {
         return consumption;
     }
 
-    private void sendToUI(double liveConsumption, UUID deviceId) {
-        //TODO: send to UI via websocket
-        LOGGER.warn("Live consumption: {}", liveConsumption);
+    private void sendToUI(double liveConsumption, Device device) {
+        LiveConsumption consumptionDTO = new LiveConsumption(device.getId().toString(), liveConsumption);
+        LOGGER.warn("Live consumption: {}", consumptionDTO);
+        socketTemplate.convertAndSend("/topic/message", consumptionDTO.toString());
     }
 }

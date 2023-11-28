@@ -2,7 +2,7 @@ FROM maven:3.8.3-openjdk-17 AS builder
 
 COPY ./src/ /root/src
 COPY ./pom.xml /root/
-COPY ./checkstyle.xml /root/
+#COPY ./checkstyle.xml /root/
 WORKDIR /root
 RUN mvn package
 RUN java -Djarmode=layertools -jar /root/target/backend.monitoring-1.0-SNAPSHOT.jar list

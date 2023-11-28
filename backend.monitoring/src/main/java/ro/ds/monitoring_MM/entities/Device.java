@@ -29,6 +29,7 @@ public class Device implements Serializable {
     private UUID id;
 
     @Column(name = "maxConsumption")
+    @Getter
     private int maxConsumption;
 
 }
