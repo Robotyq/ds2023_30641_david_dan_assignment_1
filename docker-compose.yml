@@ -3,6 +3,8 @@ version: '3'
 services:
   device-backend-container:
     image: devicebackendimg
+    build:
+      context: ./backend.devices
     ports:
       - "8080:8080"
     environment:
@@ -14,6 +16,8 @@ services:
 
   user-backend-container:
     image: usersbackendimg
+    build:
+      context: ./backend.users
     ports:
       - "8081:8081"
     environment:
@@ -26,6 +30,8 @@ services:
 
   front-container:
     image: frontimg
+    build:
+      context: ./frontend
     ports:
       - "3000:3000"
     expose:
