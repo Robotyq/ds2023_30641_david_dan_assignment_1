@@ -8,6 +8,7 @@ import BarChart from "./BarChart";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import SockJsClient from 'react-stomp';
+import ChatBubble from "./ChatBubble";
 
 const containerStyle = {
     padding: '20px',
@@ -118,7 +119,7 @@ export default function ClientPage() {
                     url={HOST.monitoring_socket}
                     topics={['/topic/message']}
                     onConnect={onConnected}
-                    onDisconnect={console.log("Disconnected!")}
+                    onDisconnect={() => console.log("Disconnected!")}
                     onMessage={msg => onMessageReceived(msg)}
                     debug={true}
                 />
@@ -186,8 +187,25 @@ export default function ClientPage() {
                         )}
                     </div>
                 )}
+
+                <div style={{
+                    position: 'fixed',
+                    bottom: 0,
+                    right: 0,
+                    margin: '20px',
+                    background: '#f0f0f0',
+                    padding: '10px',
+                    border: '1px solid #ccc',
+                    boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)'
+                }}>
+                    {/*<p>Chat with an Admin</p>*/}
+                    <ChatBubble>
+                    </ChatBubble>
+                </div>
             </div>
 
+
         </div>
-    );
+    )
+        ;
 }

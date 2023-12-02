@@ -3,7 +3,6 @@ package ro.ds.monitoring_MM.services;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import ro.ds.monitoring_MM.dtos.HourMeasure;
 import ro.ds.monitoring_MM.dtos.LiveConsumption;
@@ -22,13 +21,14 @@ public class MeasurementService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MeasurementService.class);
     private final MeasurementRepository measurementRepository;
     private final DeviceRepository deviceRepository;
-    private final SimpMessagingTemplate socketTemplate;
+    private final WebsocketService socketService;
+
 
     @Autowired
-    public MeasurementService(MeasurementRepository measurementRepository, DeviceRepository deviceRepository, SimpMessagingTemplate socketTemplate) {
+    public MeasurementService(MeasurementRepository measurementRepository, DeviceRepository deviceRepository, WebsocketService socketService) {
         this.measurementRepository = measurementRepository;
         this.deviceRepository = deviceRepository;
-        this.socketTemplate = socketTemplate;
+        this.socketService = socketService;
     }
 
     public List<HourMeasure> getConsumptionForDate(UUID deviceId, Date date) {
@@ -111,6 +111,10 @@ public class MeasurementService {
     private void sendToUI(double liveConsumption, Device device) {
         LiveConsumption consumptionDTO = new LiveConsumption(device.getId().toString(), liveConsumption);
         LOGGER.warn("Live consumption: {}", consumptionDTO);
-        socketTemplate.convertAndSend("/topic/message", consumptionDTO.toString());
+        socketService.sendConsumption(consumptionDTO);
+    }
+
+    public void startChat(UUID chatId) {
+        socketService.startChat(chatId);
     }
 }

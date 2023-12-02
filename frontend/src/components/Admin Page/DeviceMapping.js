@@ -1,7 +1,7 @@
 import React from 'react';
 import {Button, Form, FormGroup, Input, Label} from 'reactstrap';
-import * as API_DEVICES from "./Device Management/api/device-api";
-import * as API_USERS from "./User Management/api/person-api";
+import * as API_DEVICES from "../Device Management/api/device-api";
+import * as API_USERS from "../User Management/api/person-api";
 
 class DeviceMapping extends React.Component {
     constructor(props) {

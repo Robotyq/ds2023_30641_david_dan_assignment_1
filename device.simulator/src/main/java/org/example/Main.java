@@ -27,16 +27,12 @@ public class Main {
             System.out.println("Usage: java Main <device_id>");
             System.exit(1);
         }
-
         String deviceId = args[0];
-
         try {
             ConnectionFactory factory = new ConnectionFactory();
             factory.setUri(RABBITMQ_URL);
-
             try (Connection connection = factory.newConnection();
                  Channel channel = connection.createChannel()) {
-
                 channel.queueDeclare(QUEUE_NAME, true, false, false, null);
 
                 try (InputStream inputStream = Main.class.getResourceAsStream("/sensor.csv");
@@ -53,11 +49,10 @@ public class Main {
                         jsonNode.put("timestamp", timeMillis += 1000 * 60 * 5);//+5min
                         jsonNode.put("device_id", deviceId);
                         jsonNode.put("measure", measurementValue);
-
                         String message = jsonNode.toString();
+
                         channel.basicPublish("", QUEUE_NAME, null, message.getBytes());
                         System.out.println(" [x] Sent: " + message);
-
 //                        TimeUnit.SECONDS.sleep(3);
                         TimeUnit.MILLISECONDS.sleep(1000);
                     }

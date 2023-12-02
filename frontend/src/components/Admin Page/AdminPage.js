@@ -1,8 +1,9 @@
 import React, {useEffect} from 'react';
-import UsersCrud from "./User Management/users-crud";
-import DevicesCrud from "./Device Management/devices-crud";
+import UsersCrud from "../User Management/users-crud";
+import DevicesCrud from "../Device Management/devices-crud";
 import DeviceMapping from "./DeviceMapping";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
+import {Button} from "reactstrap";
 
 const AdminPage = () => {
     const navigate = useNavigate();
@@ -30,6 +31,15 @@ const AdminPage = () => {
                 </div>
                 <div style={{width: '22%'}}>
                     <DeviceMapping/>
+                </div>
+                <div>
+                    <Link to="/Chat">
+                        <Button color="primary" style={{
+                            position: 'fixed',
+                            bottom: '20px',
+                            right: '20px',
+                        }}>Go to Chat</Button>
+                    </Link>
                 </div>
             </div>
         </div>
