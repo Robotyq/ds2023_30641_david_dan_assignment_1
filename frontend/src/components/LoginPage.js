@@ -25,8 +25,14 @@ const LoginPage = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.get(`http://localhost:8081/user/login?email=${username}&pass=${password}`);
-            let user = response.data;
+            const response = await axios.post('http://localhost:8081/user/login', {
+                email: username,
+                pass: password
+            });
+            let jwt = response.data.token;
+            let user = response.data.user;
+            console.log(jwt);
+            localStorage.setItem('jwt', jwt);
             const role = user ? user.role : ' ';
             if (role === 'CLIENT' || role === 'ADMIN') {
                 sessionStorage.setItem('loggedUser', JSON.stringify(user));

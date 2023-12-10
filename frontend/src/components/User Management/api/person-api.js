@@ -5,18 +5,25 @@ import RestApiClient from "../../../commons/api/rest-client";
 const endpoint = {
     user: '/user'
 };
-
+const token = localStorage.getItem('jwt');
 function getPersons(callback) {
+    const headers = {
+        'Authorization': `Bearer ${token}`,
+    };
     let request = new Request(HOST.user_backend_api + endpoint.user, {
         method: 'GET',
+        headers: new Headers(headers),
     });
-    console.log(request.url);
+    console.log(request.headers.get('Authorization'));
     RestApiClient.performRequest(request, callback);
 }
 
 function getPersonById(params, callback) {
     let request = new Request(HOST.user_backend_api + endpoint.user + "/" + params.id, {
-        method: 'GET'
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        }
     });
 
     console.log(request.url);
@@ -29,6 +36,7 @@ function postPerson(user, callback) {
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(user)
     });
@@ -44,6 +52,7 @@ function putPerson(user, callback) {
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(user)
     });
@@ -59,6 +68,7 @@ function deletePerson(id, callback) {
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
         },
     });
 

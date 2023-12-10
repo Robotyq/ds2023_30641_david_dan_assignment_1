@@ -16,4 +16,5 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             "ORDER BY u.id LIMIT 1")
     Optional<User> findByEmailAndPass(@Param("email") String email, @Param("pass") String pass);
 
+    Optional<User> findByEmail(String username);
 }

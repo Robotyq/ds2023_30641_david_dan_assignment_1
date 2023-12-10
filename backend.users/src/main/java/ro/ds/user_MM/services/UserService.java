@@ -3,6 +3,8 @@ package ro.ds.user_MM.services;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.ds.user_MM.controllers.handlers.exceptions.model.ResourceNotFoundException;
@@ -100,5 +102,11 @@ public class UserService {
             throw new ResourceNotFoundException(User.class.getSimpleName() + " with email: " + email + " and password: " + password);
         }
         return optionalUser.get();
+    }
+
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByEmail(username)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException(String.format("User with email %s not found", username)));
     }
 }

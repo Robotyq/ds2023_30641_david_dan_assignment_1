@@ -60,11 +60,4 @@ public class UserController {
         return new ResponseEntity<>(role, HttpStatus.OK);
     }
 
-    @GetMapping("/login")
-    public ResponseEntity<User> login(@RequestParam("email") String email, @RequestParam("pass") String pass) {
-        User user = userService.getUser(email, pass);
-        return new ResponseEntity<>(user, HttpStatus.OK);
-    }
-
-
 }

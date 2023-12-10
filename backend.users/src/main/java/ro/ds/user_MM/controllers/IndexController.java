@@ -14,4 +14,9 @@ public class IndexController {
     public ResponseEntity<String> getStatus() {
         return new ResponseEntity<>("Users microservice is running...", HttpStatus.OK);
     }
+
+    @GetMapping(value = "/secured")
+    public ResponseEntity<String> getSecuredStatus() {
+        return new ResponseEntity<>("You are allowed to access Users microservice", HttpStatus.OK);
+    }
 }
