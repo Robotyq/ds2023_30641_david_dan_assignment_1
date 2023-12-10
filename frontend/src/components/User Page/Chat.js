@@ -118,7 +118,7 @@ const Chat = (props) => {
             />
             <button onClick={sendMessage}>Send</button>
             <SockJsClient
-                url={HOST.monitoring_socket}
+                url={HOST.chat_socket}
                 topics={['/topic/user/' + chatId]}
                 onConnect={handleConnect}
                 onDisconnect={handleDisconnect}

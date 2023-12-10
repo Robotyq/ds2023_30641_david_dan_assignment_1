@@ -34,9 +34,4 @@ public class MeasurementController {
         return new ResponseEntity<>(history, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/start-chat/{user_id}")
-    public ResponseEntity<String> startChat(@PathVariable("user_id") UUID userId) {
-        measurementService.startChat(userId);
-        return new ResponseEntity<>("Admins notified", HttpStatus.OK);
-    }
 }

@@ -80,6 +80,15 @@ services:
     networks:
       - myNetwork
 
+  chat-container:
+    image: chatimg
+    build:
+      context: ./backend.chat
+    ports:
+      - "8083:8083"
+    networks:
+      - myNetwork
+
 networks:
   myNetwork:
     driver: bridge

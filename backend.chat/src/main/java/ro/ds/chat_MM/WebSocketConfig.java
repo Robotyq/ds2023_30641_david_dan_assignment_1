@@ -1,4 +1,4 @@
-package ro.ds.monitoring_MM;
+package ro.ds.chat_MM;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -21,5 +21,4 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         // with sockjs
         registry.addEndpoint("/ws-message").setAllowedOrigins("http://localhost:3000").withSockJS();
     }
-
 }

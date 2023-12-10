@@ -15,5 +15,16 @@
 //        this.validationErrors = errors;
 //        this.status = status;
 //    }
-//
+////
+////    public String getResource() {
+////        return resource;
+////    }
+////
+////    public HttpStatus getStatus() {
+////        return status;
+////    }
+////
+////    public List<String> getValidationErrors() {
+////        return validationErrors;
+////    }
 //}

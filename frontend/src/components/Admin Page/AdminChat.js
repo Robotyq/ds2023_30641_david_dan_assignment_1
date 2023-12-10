@@ -146,7 +146,7 @@ const AdminChat = () => {
                 ))}
             </div>
             <SockJsClient
-                url={HOST.monitoring_socket}
+                url={HOST.chat_socket}
                 topics={['/topic/admin']}
                 onConnect={() => console.log('Connected')}
                 onDisconnect={() => console.log('Disconnected')}
@@ -155,7 +155,7 @@ const AdminChat = () => {
             {chats.map(chat => (
                 <SockJsClient
                     key={chat.chatId}
-                    url={HOST.monitoring_socket}
+                    url={HOST.chat_socket}
                     topics={['/topic/admin/' + chat.chatId]}
                     onMessage={(message, topic) => handleIncomingMessage(message, topic)}
                     ref={(client) => (chat.socketRef = client)}

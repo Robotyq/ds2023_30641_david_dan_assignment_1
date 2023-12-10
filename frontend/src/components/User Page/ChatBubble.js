@@ -39,7 +39,7 @@ const SupportChatBubble = () => {
         setIsChatStarted(true);
         // Call the backend API to start the chat and get a new chatId
         try {
-            const response = await axios.get(HOST.monitoring_api + 'start-chat/' + loggedUser.id);
+            const response = await axios.get(HOST.chat_api + 'start-chat/' + loggedUser.id);
             console.log(response.data)
             // Update chatId in session storage and state
             sessionStorage.setItem('chatId', newChatId);

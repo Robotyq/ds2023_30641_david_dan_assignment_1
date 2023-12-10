@@ -114,7 +114,4 @@ public class MeasurementService {
         socketService.sendConsumption(consumptionDTO);
     }
 
-    public void startChat(UUID chatId) {
-        socketService.startChat(chatId);
-    }
 }
