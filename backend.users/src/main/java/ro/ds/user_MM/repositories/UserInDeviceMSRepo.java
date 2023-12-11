@@ -22,38 +22,31 @@ public class UserInDeviceMSRepo {
     @Value("${deviceBackend.ip}")
     private String deviceMSIp;
 
-    public boolean insertUser(UUID id) {
+    public boolean insertUser(UUID id, String token) {
         String url = "http://" + deviceMSIp + ":8080/device/insert/user";
         User newUser = new User(id);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(token);
         HttpEntity<User> request = new HttpEntity<>(newUser, headers);
         ResponseEntity<UUID> response = restTemplate.postForEntity(url, request, UUID.class);
         return response.getStatusCode().is2xxSuccessful();
     }
 
-    public boolean deleteUser(UUID id) {
+    public boolean deleteUser(UUID id, String token) {
         String url = "http://" + deviceMSIp + ":8080/device/delete/user/" + id.toString();
+        // Create headers with Bearer token
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(token);
+        // Create HttpEntity with headers
+        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+        // Make the DELETE request with headers
         ResponseEntity<String> response = restTemplate.exchange(
                 url,
                 org.springframework.http.HttpMethod.DELETE,
-                null,
+                requestEntity,
                 String.class
         );
-//
-//        // Handle the response or potential errors as needed
-//        if (response.getStatusCode().is2xxSuccessful()) {
-//            // The deletion was successful
-//        } else {
-//            // Handle the error
-//        }
-//
-//
-//        User newUser = new User(id);
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//        HttpEntity<User> request = new HttpEntity<>(newUser, headers);
-//        ResponseEntity<UUID> response = restTemplate.postForEntity(url, request, UUID.class);
         return response.getStatusCode().is2xxSuccessful();
     }
 

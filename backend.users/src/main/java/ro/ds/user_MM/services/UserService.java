@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ro.ds.user_MM.JWT.JwtService;
 import ro.ds.user_MM.controllers.handlers.exceptions.model.ResourceNotFoundException;
 import ro.ds.user_MM.entities.User;
 import ro.ds.user_MM.entities.UserRole;
@@ -22,11 +23,13 @@ public class UserService {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
     private final UserRepository userRepository;
     private final UserInDeviceMSRepo userInDeviceMSRepo;
+    private final JwtService jwtService;
 
     @Autowired
-    public UserService(UserRepository userRepository, UserInDeviceMSRepo userInDeviceMSRepo) {
+    public UserService(UserRepository userRepository, UserInDeviceMSRepo userInDeviceMSRepo, JwtService jwtService) {
         this.userRepository = userRepository;
         this.userInDeviceMSRepo = userInDeviceMSRepo;
+        this.jwtService = jwtService;
     }
 
     public List<User> findUsers() {
@@ -47,7 +50,8 @@ public class UserService {
         user = userRepository.save(user);
         LOGGER.info("User with id {} was inserted in db", user.getId());
 
-        if (userInDeviceMSRepo.insertUser(user.getId())) {
+        String token = jwtService.generateToken(user);
+        if (userInDeviceMSRepo.insertUser(user.getId(), token)) {
             LOGGER.info("User with id {} was inserted in DB from Devices Microservice", user.getId());
         } else {
             LOGGER.error("User with id {} was not inserted in DB from Devices Microservice", user.getId());
@@ -71,19 +75,16 @@ public class UserService {
 
     @Transactional
     public void deleteById(UUID id) {
-        if (userRepository.existsById(id)) {
-            if (userInDeviceMSRepo.deleteUser(id)) {
-                LOGGER.info("User with id {} was deleted from DB from Devices Microservice", id);
-            } else {
-                LOGGER.error("User with id {} was not deleted from DB from Devices Microservice", id);
-                throw new ResourceNotFoundException(User.class.getSimpleName() + " with id: " + id);
-            }
-            userRepository.deleteById(id);
-            LOGGER.info("User with id {} was deleted from DB", id);
-            return;
+        User existingUser = userRepository.getById(id);
+        String token = jwtService.generateToken(existingUser);
+        if (userInDeviceMSRepo.deleteUser(id, token)) {
+            LOGGER.info("User with id {} was deleted from DB from Devices Microservice", id);
+        } else {
+            LOGGER.error("User with id {} was not deleted from DB from Devices Microservice", id);
+            throw new ResourceNotFoundException(User.class.getSimpleName() + " with id: " + id);
         }
-        LOGGER.error("User with id {} was not found in DB", id);
-        throw new ResourceNotFoundException(User.class.getSimpleName() + " with id: " + id);
+        userRepository.deleteById(id);
+        LOGGER.info("User with id {} was deleted from DB", id);
     }
 
     public UserRole getRole(String email, String password) {
