@@ -44,6 +44,7 @@ export default function ClientPage() {
     const [apiResponse, setApiResponse] = useState(null);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const navigate = useNavigate();
+    const token = localStorage.getItem("jwt");
 
 
     useEffect(() => {
@@ -85,7 +86,11 @@ export default function ClientPage() {
     useEffect(() => {
         if (currentUser) {
             axios
-                .get(HOST.device_backend_api + '/device/getByUser/' + currentUser.id)
+                .get(HOST.device_backend_api + '/device/getByUser/' + currentUser.id, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                })
                 .then((response) => {
                     setUserDevices(response.data);
                 });

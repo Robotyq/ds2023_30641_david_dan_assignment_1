@@ -14,7 +14,7 @@ function getPersons(callback) {
         method: 'GET',
         headers: new Headers(headers),
     });
-    console.log(request.headers.get('Authorization'));
+    // console.log(request.headers.get('Authorization'));
     RestApiClient.performRequest(request, callback);
 }
 

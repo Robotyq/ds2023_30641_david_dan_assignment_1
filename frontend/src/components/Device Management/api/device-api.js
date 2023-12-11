@@ -6,12 +6,18 @@ const endpoint = {
     user: '/user',
     device: '/device'
 };
-
+const token = localStorage.getItem("jwt");
 function getDevices(callback) {
+    const headers = {
+        'Authorization': `Bearer ${token}`,
+    };
     let request = new Request(HOST.device_backend_api + endpoint.device, {
         method: 'GET',
+        headers: new Headers(headers),
     });
-    console.log(request.url);
+    // console.log(request.url);
+    // console.log(token);
+    // console.log(request.headers.get("Authorization"));
     RestApiClient.performRequest(request, callback);
 }
 
@@ -38,6 +44,7 @@ function postDevice(device, callback) {
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(device)
     });
@@ -53,6 +60,7 @@ function putDevice(device, callback) {
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(device)
     });
@@ -68,6 +76,7 @@ function setUser(deviceId, userId, callback) {
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
         },
     });
 
@@ -77,11 +86,13 @@ function setUser(deviceId, userId, callback) {
 }
 
 function deleteDevice(id, callback) {
+
     let request = new Request(HOST.device_backend_api + endpoint.device + "/delete/" + id, {
         method: 'DELETE',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
+            "Authorization": "Bearer " + token,
         },
     });
 
