@@ -113,7 +113,7 @@ const LoginPage = () => {
                         />
                     </div>
                     <div>
-                        <label>Passssssssssword:</label>
+                        <label>Pasword:</label>
                         <input
                             type="password"
                             value={password}
