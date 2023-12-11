@@ -7,30 +7,8 @@ const SupportChatBubble = () => {
     const [chatId, setChatId] = useState(sessionStorage.getItem('chatId'));
     // const [showChatBubble, setShowChatBubble] = useState(!!chatId);
     const [isChatStarted, setIsChatStarted] = useState(!!chatId);
+    const token = localStorage.getItem('jwt');
 
-    // useEffect(() => {
-    //     // alert("SupportChatBubble.js")
-    //     const initializeWebSocket = () => {
-    //         // Initialize WebSocket connection using chatId as topic name
-    //         if (chatId) {
-    //             const webSocket = new WebSocket(`ws://your-websocket-server/${chatId}`);
-    //
-    //             webSocket.addEventListener('message', (event) => {
-    //                 // Handle incoming messages from WebSocket
-    //                 console.log('WebSocket message received:', event.data);
-    //             });
-    //
-    //             // Add cleanup logic if needed
-    //             return () => {
-    //                 webSocket.close();
-    //             };
-    //         }
-    //     };
-    //
-    //     if (chatId) {
-    //         initializeWebSocket();
-    //     }
-    // }, [isChatStarted, chatId]);
 
     const handleStartChat = async () => {
         let loggedUser = JSON.parse(sessionStorage.getItem('loggedUser'))
@@ -39,7 +17,12 @@ const SupportChatBubble = () => {
         setIsChatStarted(true);
         // Call the backend API to start the chat and get a new chatId
         try {
-            const response = await axios.get(HOST.chat_api + 'start-chat/' + loggedUser.id);
+            const response = await axios.get(HOST.chat_api + 'start-chat/' + loggedUser.id, {
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                },
+                // credentials: 'include',
+            });
             console.log(response.data)
             // Update chatId in session storage and state
             sessionStorage.setItem('chatId', newChatId);

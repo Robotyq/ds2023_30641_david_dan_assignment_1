@@ -21,4 +21,16 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         // with sockjs
         registry.addEndpoint("/ws-message").setAllowedOrigins("http://localhost:3000").withSockJS();
     }
+
+//    @Bean
+//    public CorsFilter corsFilter() {
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        CorsConfiguration config = new CorsConfiguration();
+//        config.addAllowedOrigin("http://localhost:3000"); // Replace with your React app's origin
+//        config.addAllowedMethod("*");
+//        config.addAllowedHeader("*");
+//        config.setAllowCredentials(true);
+//        source.registerCorsConfiguration("/**", config);
+//        return new CorsFilter(source);
+//    }
 }

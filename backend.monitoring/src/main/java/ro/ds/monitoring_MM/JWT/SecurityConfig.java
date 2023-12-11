@@ -1,4 +1,4 @@
-package ro.ds.device_MM.JWT;
+package ro.ds.monitoring_MM.JWT;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -22,7 +22,7 @@ public class SecurityConfig {
         http.csrf().disable()
                 .authorizeHttpRequests()
                 .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
-                .requestMatchers("/").permitAll()
+                .requestMatchers("**").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()

@@ -103,6 +103,9 @@ export default function ClientPage() {
                 params: {
                     dateString: date, // Format as "yyyy-MM-DD
                 },
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
             })
             .then((response) => {
                 setApiResponse(response.data);
